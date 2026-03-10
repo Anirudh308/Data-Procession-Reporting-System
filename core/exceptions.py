@@ -2,6 +2,7 @@
 Custom Exception Classes
 
 All DPRS-specific exceptions are defined here.
+Exceptions follow a hierarchy with DPRSException as base.
 """
 
 
@@ -25,13 +26,18 @@ class SchemaValidationError(DPRSException):
     pass
 
 
-class DataProcessingError(DPRSException):
-    """Raised when a processing operation fails."""
+class DataIntegrityError(DPRSException):
+    """Raised when a data integrity check fails."""
     pass
 
 
-class DataIntegrityError(DPRSException):
-    """Raised when data validation fails."""
+class DataProcessingError(DPRSException):
+    """Raised when a data processing operation fails."""
+    pass
+
+
+class ConfigurationError(DPRSException):
+    """Raised when configuration is missing or invalid."""
     pass
 
 
