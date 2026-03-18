@@ -33,7 +33,10 @@ build/
 DPRS_Comprehensive_PRD.md
 DPRS_Sprint_Plan.md
 
+# Logs and output
+logs/
 output/
+<<<<<<< HEAD
 logs/
 .dprs_cache.json
 dprs.db
@@ -41,3 +44,6 @@ dprs.db
 # Claude Code
 CLAUDE.md
 .claude/
+=======
+*.log
+>>>>>>> 375a1b9 (feat: added  config.json, exceptions.py, update logger and config, add gitignore rules)
