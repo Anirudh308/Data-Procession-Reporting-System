@@ -44,3 +44,7 @@ class ConfigurationError(DPRSException):
 class InvalidArgumentError(DPRSException):
     """Raised when invalid CLI arguments are provided."""
     pass
+
+class ReportGenerationError(DPRSException):
+    """Raised when report generation fails."""
+    pass
