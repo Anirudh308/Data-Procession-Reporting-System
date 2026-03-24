@@ -86,7 +86,7 @@ curl http://127.0.0.1:8000/jobs/<job_id>
 
 ## Project Structure
 
-```
+```text
 dprs/
 ├── core/                    # Data processing engine ✅
 │   ├── data_processor.py    # DataProcessor Singleton — load files, compute statistics
@@ -219,7 +219,7 @@ All code follows these standards:
 - **Style:** PEP 8 (Python style guide)
 - **Documentation:** 100% docstring coverage
 - **Comments:** Complex logic has inline comments
-- **Testing:** ≥85% code coverage (our target: 100%)
+- **Testing:** minimum 85% code coverage; aspirational target 100%
 - **Logging:** All operations logged, no print statements
 - **Configuration:** All settings in config.json, no hardcoding
 
@@ -232,7 +232,7 @@ flake8 dprs/
 # Run tests with coverage
 pytest --cov=core --cov=utils tests/ -v
 
-# Expected output: 53/53 tests passing, 100% coverage
+# Expected output: 53/53 tests passing, ≥85% coverage (target: 100%)
 ```
 
 ## Configuration

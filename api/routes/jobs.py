@@ -43,6 +43,6 @@ async def get_job_status(
         columns=job.columns,
         headers=job.headers,
         statistics=job.statistics,
-        created_at=job.created_at,
+        created_at=job.created_at.isoformat(),
         error=job.error,
     )

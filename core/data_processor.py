@@ -171,7 +171,7 @@ class DataProcessor:
             )
         except json.JSONDecodeError as e:
             raise InvalidFileTypeError(f"Invalid JSON format: {str(e)}")
-        except Exception as e:
+        except (FileNotFoundError, PermissionError, OSError) as e:
             raise DPRSFileNotFoundError(f"Error reading JSON file: {str(e)}")
 
     def _compute_column_stats(
@@ -298,6 +298,38 @@ class DataProcessor:
 
         return stats
 
+    def load_csv(self, filepath: str) -> LoadedData:
+        """
+        Load a CSV file, update internal state, and persist the disk cache.
+
+        Mirrors load_file() for CSV specifically, so callers can use
+        compute_statistics() after calling this method.
+        """
+        data = self._load_csv(filepath)
+        self._data = data
+        try:
+            with open('.dprs_cache.json', 'w', encoding='utf-8') as f:
+                json.dump(data, f)
+        except Exception:
+            pass
+        return data
+
+    def load_json(self, filepath: str) -> LoadedData:
+        """
+        Load a JSON file, update internal state, and persist the disk cache.
+
+        Mirrors load_file() for JSON specifically, so callers can use
+        compute_statistics() after calling this method.
+        """
+        data = self._load_json(filepath)
+        self._data = data
+        try:
+            with open('.dprs_cache.json', 'w', encoding='utf-8') as f:
+                json.dump(data, f)
+        except Exception:
+            pass
+        return data
+
     def clear(self) -> None:
         """
         Clear loaded data from memory and remove the disk cache.
@@ -330,18 +362,18 @@ def load_file(filepath: str) -> LoadFileResult:
 
 def load_csv(filepath: str) -> LoadedData:
     """
-    Load a CSV file and return structured data.
+    Load a CSV file, update singleton state, and return structured data.
     Delegates to DataProcessor singleton.
     """
-    return _get_processor()._load_csv(filepath)
+    return _get_processor().load_csv(filepath)
 
 
 def load_json(filepath: str) -> LoadedData:
     """
-    Load a JSON file (array of objects format).
+    Load a JSON file (array of objects format), update singleton state, and return structured data.
     Delegates to DataProcessor singleton.
     """
-    return _get_processor()._load_json(filepath)
+    return _get_processor().load_json(filepath)
 
 
 def get_loaded_data() -> Optional[LoadedData]:

@@ -2,6 +2,7 @@
 
 import io
 import json
+from pathlib import Path
 
 import pytest
 from sqlalchemy import create_engine
@@ -11,6 +12,7 @@ from starlette.testclient import TestClient
 
 from api.database import Base, get_db
 from api.main import app
+from core.data_processor import clear_data
 
 TEST_DB_URL = "sqlite:///:memory:"
 
@@ -38,7 +40,14 @@ def override_db():
             db.close()
 
     app.dependency_overrides[get_db] = _get_test_db
+
+    # Clear DataProcessor singleton state and disk cache before each test
+    clear_data()
+
     yield
+
+    # Tear down: clear DataProcessor state and disk cache again
+    clear_data()
     Base.metadata.drop_all(engine)
     app.dependency_overrides.clear()
 

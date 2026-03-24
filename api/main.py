@@ -8,24 +8,28 @@ Interactive docs available at:
     http://127.0.0.1:8000/docs
 """
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 from api.database import Base, engine
 from api import db_models  # noqa: F401 — registers Job model with Base
 from api.routes import jobs, upload
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Create database tables on startup."""
+    Base.metadata.create_all(bind=engine)
+    yield
+
+
 app = FastAPI(
     title="Data Processing & Reporting System API",
     description="REST API for uploading data files and retrieving processing results.",
     version="1.0.0",
+    lifespan=lifespan,
 )
-
-
-@app.on_event("startup")
-def create_tables() -> None:
-    """Create all database tables on startup if they do not already exist."""
-    Base.metadata.create_all(bind=engine)
-
 
 app.include_router(upload.router, tags=["upload"])
 app.include_router(jobs.router, tags=["jobs"])

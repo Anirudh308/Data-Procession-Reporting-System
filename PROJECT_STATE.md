@@ -171,7 +171,7 @@ uvicorn api.main:app --reload
 # Docs: http://127.0.0.1:8000/docs
 ```
 
-**Merge Safety:** Only touches `api/` (new directory) and `requirements.txt`. No overlap with the DevOps branch.
+**Merge Safety:** Touches `api/` (new directory), `core/data_processor.py` (refactored to Singleton + TypedDicts), `requirements.txt`, `config.json`, `.gitignore`, `tests/test_api.py`, documentation files (`README.md`, `ARCHITECTURE.md`, `PROJECT_STATE.md`). No overlap with the DevOps branch.
 
 ---
 

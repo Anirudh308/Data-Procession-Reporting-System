@@ -12,9 +12,9 @@ from sqlalchemy.orm import Session
 from api.db_models import Job
 
 
-def _utcnow() -> str:
-    """Return the current UTC time as an ISO-8601 string."""
-    return datetime.now(timezone.utc).isoformat()
+def _utcnow() -> datetime:
+    """Return the current UTC time as a timezone-aware datetime."""
+    return datetime.now(timezone.utc)
 
 
 def create_job(db: Session, job_id: str, filename: str) -> Job:
@@ -31,15 +31,19 @@ def create_job(db: Session, job_id: str, filename: str) -> Job:
     return job
 
 
-def update_job(db: Session, job_id: str, **fields: Any) -> None:
-    """Apply field updates to an existing job row and commit."""
+def update_job(db: Session, job_id: str, **fields: Any) -> bool:
+    """Apply field updates to an existing job row and commit.
+
+    Returns True if the job was found and updated, False if not found.
+    """
     job = db.query(Job).filter(Job.job_id == job_id).first()
     if job is None:
-        return
+        return False
     for key, value in fields.items():
         setattr(job, key, value)
     job.updated_at = _utcnow()
     db.commit()
+    return True
 
 
 def get_job(db: Session, job_id: str) -> Optional[Job]:

@@ -13,9 +13,6 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
-import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
 from api import crud
 from api.database import get_db
 from api.models import UploadResponse
@@ -43,7 +40,10 @@ async def upload_file(
     - Returns a job_id plus the computed statistics
     """
     # Validate file extension before doing any disk I/O
-    suffix = Path(file.filename).suffix.lower()
+    filename = file.filename
+    if not filename:
+        raise HTTPException(status_code=400, detail="Missing filename in upload.")
+    suffix = Path(filename).suffix.lower()
     if suffix not in ALLOWED_EXTENSIONS:
         raise HTTPException(
             status_code=400,
@@ -51,23 +51,23 @@ async def upload_file(
         )
 
     job_id = str(uuid.uuid4())
-    crud.create_job(db, job_id, file.filename)
-    logger.info(f"Job {job_id}: upload started for '{file.filename}'")
+    crud.create_job(db, job_id, filename)
+    logger.info(f"Job {job_id}: upload started for '{filename}'")
 
     # Determine destination path from config
     config = get_config()
     input_dir = config.get("input_dir", "input")
     os.makedirs(input_dir, exist_ok=True)
-    dest_path = os.path.join(input_dir, file.filename)
+    dest_path = os.path.join(input_dir, filename)
 
     # Save uploaded file to disk
     try:
         with open(dest_path, "wb") as dest:
             shutil.copyfileobj(file.file, dest)
-    except Exception as exc:
+    except OSError as exc:
         crud.update_job(db, job_id, status="failed", error=str(exc))
         logger.error(f"Job {job_id}: failed to save file — {exc}")
-        raise HTTPException(status_code=422, detail=f"Could not save file: {exc}")
+        raise HTTPException(status_code=422, detail=f"Could not save file: {exc}") from exc
 
     # Process the file using existing core module
     try:
@@ -77,7 +77,7 @@ async def upload_file(
     except (DPRSException, ValueError) as exc:
         crud.update_job(db, job_id, status="failed", error=str(exc))
         logger.error(f"Job {job_id}: processing failed — {exc}")
-        raise HTTPException(status_code=422, detail=str(exc))
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     # Persist result in database
     crud.update_job(
@@ -94,7 +94,7 @@ async def upload_file(
     return UploadResponse(
         job_id=job_id,
         status="completed",
-        filename=file.filename,
+        filename=filename,
         rows=file_meta["rows"],
         columns=file_meta["columns"],
         headers=file_meta["headers"],
