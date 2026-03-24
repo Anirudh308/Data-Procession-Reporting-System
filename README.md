@@ -21,7 +21,9 @@ A Python data processing system with both a CLI and a REST API. Loads CSV/JSON f
 
 **FastAPI Feature: ✅ COMPLETE** — REST API with file upload, job tracking, SQLite persistence (`feature/fast-api-anishekh`)
 
-**Sprint 3: ⏳ UPCOMING** — Docker, GitHub Actions CI/CD, security hardening
+**Security & Quality Hardening: ✅ COMPLETE** — path traversal fix, exception chaining, CRUD field validation, requirements pinned with version bounds
+
+**Sprint 3: ⏳ UPCOMING** — Docker, GitHub Actions CI/CD
 
 See `PROJECT_STATE.md` for detailed progress.
 
@@ -344,8 +346,8 @@ Each sprint:
 
 ## Next Steps
 
-- **Anishekh:** Create PR `feature/fast-api-anishekh` → main
-- **Intern 3:** Start Sprint 3 (Docker, CI/CD, security hardening)
+- **Anishekh:** Create PR `feature/fast-api-anishekh` → main (security & quality hardening applied)
+- **Intern 3:** Start Sprint 3 (Docker, CI/CD)
 - **Team:** Review and merge FastAPI branch, daily standups
 
 See `PROJECT_STATE.md` for detailed sprint progress.

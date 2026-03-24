@@ -17,7 +17,6 @@ from api import crud
 from api.database import get_db
 from api.models import UploadResponse
 from core.data_processor import clear_data, compute_statistics, load_file
-from core.exceptions import DPRSException
 from utils.config import get_config
 from utils.logger import logger
 
@@ -58,7 +57,8 @@ async def upload_file(
     config = get_config()
     input_dir = config.get("input_dir", "input")
     os.makedirs(input_dir, exist_ok=True)
-    dest_path = os.path.join(input_dir, filename)
+    safe_filename = Path(filename).name
+    dest_path = os.path.join(input_dir, safe_filename)
 
     # Save uploaded file to disk
     try:
@@ -74,7 +74,7 @@ async def upload_file(
         clear_data()
         file_meta = load_file(dest_path)
         statistics = compute_statistics()
-    except (DPRSException, ValueError) as exc:
+    except Exception as exc:
         crud.update_job(db, job_id, status="failed", error=str(exc))
         logger.error(f"Job {job_id}: processing failed — {exc}")
         raise HTTPException(status_code=422, detail=str(exc)) from exc

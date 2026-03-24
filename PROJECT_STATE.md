@@ -1,6 +1,6 @@
 # DPRS Project Status & Progress
 
-**Last Updated:** 2026-03-23
+**Last Updated:** 2026-03-24
 **Project Status:** 60% Complete (18 of 30 days)
 **Overall Quality:** Excellent ✅ — Senior developer review applied
 
@@ -244,7 +244,7 @@ uvicorn api.main:app --reload
 | Docstrings | 100% | 100% | ✅ COMPLETE |
 | Security Issues | 0 | 0 | ✅ CLEAN |
 | Technical Debt | 0 | 0 | ✅ CLEAN |
-| Days Complete | 18 | 18 | ✅ ON TIME |
+| Days Complete | 18 | 19 | ✅ ON TIME |
 
 ---
 
@@ -338,6 +338,22 @@ After each sprint:
 
 ---
 
+## Security & Code Quality Hardening ✅ COMPLETE (2026-03-24)
+
+Applied security review and code-quality fixes to `feature/fast-api-anishekh`:
+
+- **Path traversal fix** (`api/routes/upload.py`) — client-supplied filename is sanitised with `Path(filename).name` before building the disk path; original filename retained for display only
+- **Broad exception catch** (`api/routes/upload.py`) — processing block now catches `Exception` so unexpected errors mark the job `failed` instead of leaving it stuck in `processing`
+- **CRUD field validation** (`api/crud.py`) — `update_job` validates keys against `Job.__table__.columns`; unknown fields raise `ValueError`
+- **Exception chaining** (`core/data_processor.py`) — all three custom re-raise sites now use `raise ... from e` to preserve original tracebacks
+- **Cache-write logging** (`core/data_processor.py`) — silent `except Exception: pass` blocks replaced with `logger.debug(...)` so disk errors are visible in debug logs
+- **Unused import removed** (`tests/test_api.py`) — `from pathlib import Path` deleted
+- **Requirements pinned** (`requirements.txt`) — all six packages given `>=min,<next_major` bounds; strategy comment added
+
+Zero breaking changes — all 53 tests continue to pass, flake8 clean.
+
+---
+
 ## Code Review Refactor ✅ COMPLETE (2026-03-23)
 
 Applied senior developer review feedback to `core/data_processor.py`:
@@ -372,10 +388,11 @@ Applied senior developer review feedback to `core/data_processor.py`:
 2. ✅ Sprint 2 complete — merged to main
 3. ✅ FastAPI + DB complete on `feature/fast-api-anishekh`
 4. ✅ Senior developer code review applied — `DataProcessor` Singleton, TypedDicts, encapsulation
-5. → Create PR: `feature/fast-api-anishekh` → main
-6. → Team review (target: 24 hours)
-7. → Merge to main
-8. → Intern 3 clones and starts Sprint 3 (DevOps — Docker, CI/CD, security)
+5. ✅ Security & code-quality hardening applied — path traversal fix, exception handling, CRUD validation, requirements pinned
+6. → Create PR: `feature/fast-api-anishekh` → main
+7. → Team review (target: 24 hours)
+8. → Merge to main
+9. → Intern 3 clones and starts Sprint 3 (DevOps — Docker, CI/CD)
 
 ---
 

@@ -39,7 +39,10 @@ def update_job(db: Session, job_id: str, **fields: Any) -> bool:
     job = db.query(Job).filter(Job.job_id == job_id).first()
     if job is None:
         return False
+    valid_columns = {col.name for col in Job.__table__.columns}
     for key, value in fields.items():
+        if key not in valid_columns:
+            raise ValueError(f"Invalid field for Job update: '{key}'")
         setattr(job, key, value)
     job.updated_at = _utcnow()
     db.commit()

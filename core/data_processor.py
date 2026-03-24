@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, TypedDict
 from .exceptions import FileNotFoundError as DPRSFileNotFoundError
 from .exceptions import InvalidFileTypeError
+from utils.logger import logger
 
 
 # ---------------------------------------------------------------------------
@@ -121,7 +122,7 @@ class DataProcessor:
                 column_count=len(headers),
             )
         except Exception as e:
-            raise DPRSFileNotFoundError(f"Error reading CSV file: {str(e)}")
+            raise DPRSFileNotFoundError(f"Error reading CSV file: {str(e)}") from e
 
     def _load_json(self, filepath: str) -> LoadedData:
         """
@@ -170,9 +171,9 @@ class DataProcessor:
                 column_count=len(headers),
             )
         except json.JSONDecodeError as e:
-            raise InvalidFileTypeError(f"Invalid JSON format: {str(e)}")
+            raise InvalidFileTypeError(f"Invalid JSON format: {str(e)}") from e
         except (FileNotFoundError, PermissionError, OSError) as e:
-            raise DPRSFileNotFoundError(f"Error reading JSON file: {str(e)}")
+            raise DPRSFileNotFoundError(f"Error reading JSON file: {str(e)}") from e
 
     def _compute_column_stats(
         self, values: List[float], col_name: str
@@ -226,8 +227,8 @@ class DataProcessor:
         try:
             with open('.dprs_cache.json', 'w', encoding='utf-8') as f:
                 json.dump(data, f)
-        except Exception:
-            pass  # Fail gracefully if we cannot write to disk
+        except Exception as e:
+            logger.debug(f"Could not write cache file: {e}")
 
         return LoadFileResult(
             status='success',
@@ -310,8 +311,8 @@ class DataProcessor:
         try:
             with open('.dprs_cache.json', 'w', encoding='utf-8') as f:
                 json.dump(data, f)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f"Could not write cache file: {e}")
         return data
 
     def load_json(self, filepath: str) -> LoadedData:
@@ -326,8 +327,8 @@ class DataProcessor:
         try:
             with open('.dprs_cache.json', 'w', encoding='utf-8') as f:
                 json.dump(data, f)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f"Could not write cache file: {e}")
         return data
 
     def clear(self) -> None:
