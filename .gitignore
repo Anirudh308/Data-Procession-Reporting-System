@@ -37,3 +37,19 @@ DPRS_Sprint_Plan.md
 logs/
 output/
 *.log
+
+# Secrets and credentials
+.env*
+!.env.example
+!env.example
+*.pem
+*.key
+credentials.json
+secrets.json
+client_secret.json
+*.p12
+*.pfx
+.dprs_cache.json
+*.sqlite
+*.db
+.aws/
