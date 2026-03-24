@@ -22,8 +22,15 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy project files
 COPY . .
 
-# Run tests by default if no command is provided, or the CLI can be passed
-# Since this is a CLI tool, setting the entrypoint to the Python CLI module
+RUN mkdir -p logs input output/reports
+
+# Create non-root user
+RUN useradd -m -d /home/dprsuser -s /bin/bash dprsuser && \
+    chown -R dprsuser:dprsuser /app
+
+# Switch to non-root user
+USER dprsuser
+
 ENTRYPOINT ["python", "-m", "cli.main"]
 
 # Default arguments for the entrypoint (can be overridden by docker run)
