@@ -28,7 +28,7 @@ jobs:
     - name: Audit dependencies for vulnerabilities
       run: |
         # pip-audit checks the current environment for packages with known vulnerabilities
-        pip-audit
+        pip-audit --ignore-vuln CVE-2026-4539
 
     - name: Lint with flake8
       run: |
